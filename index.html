@@ -4,20 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Survei Kepuasan Pelayanan</title>
+    <!-- Tailwind CSS untuk Desain Modern -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Chart.js untuk Grafik -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased min-h-screen py-10 px-4">
 
     <div class="max-w-4xl mx-auto space-y-10">
         
+        <!-- ================= KUESIONER UTAMA ================= -->
         <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header -->
             <div class="bg-blue-600 text-white p-6 sm:p-8 text-center">
                 <h1 class="text-2xl sm:text-3xl font-bold">SURVEI KEPUASAN PELAYANAN</h1>
                 <p class="text-blue-100 mt-2 text-sm sm:text-base">Silakan isi kuesioner di bawah ini sesuai dengan pengalaman layanan yang Anda terima.</p>
             </div>
 
             <form id="surveyForm" class="p-6 sm:p-8 space-y-8">
+                <!-- SECTION 1: IDENTITAS RESPONDEN -->
                 <div>
                     <h2 class="text-xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2 mb-6">I. IDENTITAS RESPONDEN</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -28,9 +33,10 @@
                         
                         <div>
                             <label class="font-medium text-gray-700 mb-2 block">Tanggal Menerima Layanan <span class="text-red-500">*</span></label>
-                            <input type="date" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="date" id="tanggalLayanan" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
 
+                        <!-- INPUT PENDIDIKAN -->
                         <div class="md:col-span-2">
                             <label class="font-medium text-gray-700 mb-2 block">Pendidikan Terakhir <span class="text-red-500">*</span></label>
                             <select id="pendidikanTerakhir" required class="w-full border border-gray-300 rounded-lg p-2.5 bg-white outline-none focus:ring-2 focus:ring-blue-500">
@@ -47,7 +53,7 @@
 
                         <div class="md:col-span-2">
                             <label class="font-medium text-gray-700 mb-2 block">Alamat <span class="text-red-500">*</span></label>
-                            <textarea rows="2" placeholder="Masukkan alamat lengkap tempat tinggal Anda saat ini" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
+                            <textarea id="alamat" rows="2" placeholder="Masukkan alamat lengkap tempat tinggal Anda saat ini" required class="w-full border border-gray-300 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
                         </div>
 
                         <div class="md:col-span-2">
@@ -60,12 +66,15 @@
                     </div>
                 </div>
 
+                <!-- SECTION 2: PENDAPAT RESPONDEN TENTANG PELAYANAN -->
                 <div>
                     <h2 class="text-xl font-bold text-gray-900 border-b-2 border-blue-500 pb-2 mb-6">II. PENDAPAT RESPONDEN TENTANG PELAYANAN</h2>
                     <div class="grid grid-cols-1 gap-6" id="questionsContainer">
-                        </div>
+                        <!-- Pertanyaan 1 - 16 akan dimuat oleh JavaScript -->
+                    </div>
                 </div>
 
+                <!-- BUTTON SUBMIT -->
                 <div class="text-center pt-4">
                     <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold px-12 py-3 rounded-lg shadow-md cursor-pointer text-lg transition duration-150">
                         Kirim Survei
@@ -74,16 +83,32 @@
             </form>
         </div>
 
+        <!-- ================= DASBOR REKAPITULASI BULANAN Real-Time ================= -->
         <div class="bg-white rounded-2xl shadow-xl p-6 sm:p-8 space-y-8">
-            <div class="border-b-2 border-green-500 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <h2 class="text-xl font-bold text-gray-900">📊 DASBOR RINGKASAN HASIL SURVEI</h2>
-                <div class="bg-green-100 text-green-800 font-semibold px-4 py-1.5 rounded-full text-sm">
-                    Total Form Masuk: <span id="totalResponden" class="text-base font-bold">0</span> Responden
+            <div class="border-b-2 border-green-500 pb-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">📊 DASBOR REKAPITULASI BULANAN</h2>
+                    <p class="text-xs text-gray-500 mt-1">Pilih bulan di bawah untuk memfilter tampilan diagram bulat secara spesifik</p>
+                </div>
+                
+                <!-- DROPDOWN FILTER BULAN UTAMA -->
+                <div class="flex items-center gap-2">
+                    <label for="filterBulan" class="text-sm font-semibold text-gray-700">Lihat Rekap Bulan:</label>
+                    <select id="filterBulan" class="border border-gray-300 rounded-lg p-2 text-sm bg-white font-bold text-blue-700 outline-none focus:ring-2 focus:ring-blue-500 shadow-xs">
+                        <!-- Pilihan bulan akan diisi otomatis lewat JS -->
+                    </select>
                 </div>
             </div>
 
+            <!-- STATISTIK TOTAL RESPONDEN BULAN TERPILIH -->
+            <div class="bg-blue-50 p-4 rounded-xl flex justify-between items-center border border-blue-100">
+                <span class="text-sm font-bold text-blue-900">Total Responden Bulan Ini:</span>
+                <span class="bg-blue-600 text-white font-extrabold px-4 py-1 rounded-full text-base" id="totalRespondenBulan">0</span>
+            </div>
+
+            <!-- PROFIL DEMOGRAFI PENDIDIKAN PER BULAN -->
             <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col items-center">
-                <h3 class="text-base font-bold text-gray-700 mb-4 text-center">Profil Demografi Pendidikan Responden</h3>
+                <h3 class="text-base font-bold text-gray-700 mb-4 text-center">Profil Pendidikan Responden (Bulan Terpilih)</h3>
                 <div class="w-full relative h-64 max-w-md">
                     <canvas id="educationChart"></canvas>
                 </div>
@@ -92,10 +117,12 @@
                 </button>
             </div>
 
+            <!-- HASIL DIAGRAM BULAT 16 PERTANYAAN PER BULAN -->
             <div>
-                <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-2 mb-6 text-center sm:text-left">📊 Hasil Analisis Setiap Pertanyaan (Diagram Bulat)</h3>
+                <h3 class="text-base font-bold text-gray-900 border-b border-gray-200 pb-2 mb-6 text-center sm:text-left">📊 Analisis Jawaban Per Pertanyaan (Bulan Terpilih)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="chartsContainer">
-                    </div>
+                    <!-- 16 Diagram Bulat Pertanyaan akan dimuat di sini oleh JavaScript -->
+                </div>
             </div>
             
             <div class="text-right border-t border-gray-200 pt-4">
@@ -105,12 +132,13 @@
 
     </div>
 
+    <!-- LOGIKA DATA REALTIME BERSIH BEBAS ERROR -->
     <script>
         const questionsData = [
             { id: 1, text: "Informasi pelayanan tersedia melalui media elektronik maupun nonelektronik" },
             { id: 2, text: "Kesesuaian persyaratan dengan informasi yang diberikan" },
             { id: 3, text: "Standar dan prosedur layanan diinformasikan dengan jelas" },
-            { id: 4, text: "Prosedur/Alur layanan mudah dipahami and dilakukan" },
+            { id: 4, text: "Prosedur/Alur layanan mudah dipahami dan dilakukan" },
             { id: 5, text: "Layanan diberikan sesuai prosedur tanpa kecurangan" },
             { id: 6, text: "Jangka waktu layanan sesuai dengan yang diinformasikan" },
             { id: 7, text: "Biaya layanan sesuai dengan yang diinformasikan" },
@@ -127,11 +155,27 @@
 
         const labels = ["Sangat Tidak Setuju", "Tidak Setuju", "Setuju/Sesuai", "Sangat Setuju"];
         const eduLabels = ["SD", "SMP", "SMA", "D3", "S1", "S2", "S3"];
+        const namaBulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
         
-        // Array untuk menyimpan instance chart dari 16 pertanyaan
         let surveyCharts = {};
+        let educationChart;
 
-        // 1. GENERATE FORM PERTANYAAN
+        // Set input tanggal form bawaan ke tanggal hari ini secara otomatis
+        document.getElementById('tanggalLayanan').valueToDate = new Date();
+
+        // 1. GENERATE LIST OPSI PILIHAN BULAN PADA DROPDOWN FILTER
+        const filterBulanSelect = document.getElementById('filterBulan');
+        const bulanSekarang = new Date().getMonth(); // Ambil index bulan berjalan (0-11)
+        
+        namaBulan.forEach((bln, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerText = bln;
+            if(idx === bulanSekarang) opt.selected = true; // Auto select bulan aktif saat ini
+            filterBulanSelect.appendChild(opt);
+        });
+
+        // 2. GENERATE COMPONENT FORM PERTANYAAN KUESIONER[cite: 2]
         const qContainer = document.getElementById('questionsContainer');
         questionsData.forEach(q => {
             const div = document.createElement('div');
@@ -150,38 +194,33 @@
             qContainer.appendChild(div);
         });
 
-        // 2. INITIALIZATION / DATABASE LOCAL STORAGE
-        let savedData = JSON.parse(localStorage.getItem('survey_total_db'));
+        // 3. STRUKTUR DATABASE BARU BERDASARKAN BULAN (0 - 11)
+        let savedData = JSON.parse(localStorage.getItem('survey_monthly_db'));
         if (!savedData) {
-            savedData = { 
-                total: 0, 
-                eduCounts: [0, 0, 0, 0, 0, 0, 0],
-                questions: {} // Struktur baru: menyimpan data array [0,0,0,0] bagi setiap ID pertanyaan
-            };
-            questionsData.forEach(q => {
-                savedData.questions[q.id] = [0, 0, 0, 0];
-            });
-            localStorage.setItem('survey_total_db', JSON.stringify(savedData));
+            savedData = {};
+            // Setup cetakan struktur kosong awal untuk masing-masing bulan dari index 0 hingga 11
+            for (let m = 0; m < 12; m++) {
+                savedData[m] = {
+                    total: 0,
+                    eduCounts: [0, 0, 0, 0, 0, 0, 0],
+                    questions: {}
+                };
+                questionsData.forEach(q => {
+                    savedData[m].questions[q.id] = [0, 0, 0, 0];
+                });
+            }
+            localStorage.setItem('survey_monthly_db', JSON.stringify(savedData));
         }
 
-        // Memastikan struktur data pertanyaan baru wujud jika menggunakan data lama
-        if (!savedData.questions || Object.keys(savedData.questions).length === 0) {
-            savedData.questions = {};
-            questionsData.forEach(q => {
-                savedData.questions[q.id] = [0, 0, 0, 0];
-            });
-        }
-        document.getElementById('totalResponden').innerText = savedData.total;
-
-        // 3. INSTANSIKAN GRAFIK DEMOGRAFI PENDIDIKAN (Doughnut)
+        // 4. INSTANSIKAN GRAFIK DEMOGRAFI PENDIDIKAN AWAL (Doughnut)[cite: 2]
         const ctxEdu = document.getElementById('educationChart').getContext('2d');
-        const educationChart = new Chart(ctxEdu, {
+        educationChart = new Chart(ctxEdu, {
             type: 'doughnut',
             data: {
                 labels: eduLabels,
                 datasets: [{
                     label: 'Jumlah Responden',
-                    data: savedData.eduCounts,
+                    data: [0, 0, 0, 0, 0, 0, 0],
                     backgroundColor: ['#6b7280', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#6366f1']
                 }]
             },
@@ -194,10 +233,9 @@
             }
         });
 
-        // 4. GENERATE DAN INSTANSIKAN 16 DIAGRAM BULAT SECARA OTOMATIS
+        // 5. INJEKSI EMIT DAN BANGUN 16 DIAGRAM BULAT PERTANYAAN KE CONTAINER
         const chartsContainer = document.getElementById('chartsContainer');
         questionsData.forEach(q => {
-            // Ciptakan elemen kad kontainer kad untuk carta
             const chartDiv = document.createElement('div');
             chartDiv.className = "bg-gray-50 p-4 rounded-xl border border-gray-200 flex flex-col items-center shadow-xs";
             
@@ -214,14 +252,13 @@
             `;
             chartsContainer.appendChild(chartDiv);
 
-            // Bina chart baru (Doughnut) untuk pertanyaan ini
             const ctxQ = document.getElementById(`chartQ${q.id}`).getContext('2d');
             surveyCharts[q.id] = new Chart(ctxQ, {
                 type: 'doughnut',
                 data: {
                     labels: labels,
                     datasets: [{
-                        data: savedData.questions[q.id],
+                        data: [0, 0, 0, 0],
                         backgroundColor: ['#ef4444', '#f97316', '#3b82f6', '#22c55e']
                     }]
                 },
@@ -229,80 +266,109 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { 
-                            position: 'bottom', 
-                            labels: { boxWidth: 8, font: { size: 9 } } 
-                        }
+                        legend: { position: 'bottom', labels: { boxWidth: 8, font: { size: 9 } } }
                     }
                 }
             });
         });
 
-        // 5. LOGIKA SUBMIT FORM
+        // FUNCTION UPDATE DATA GRAFIK BERDASARKAN BULAN YANG DIPILIH
+        function renderDataBulan(bulanIndex) {
+            const dataBulanIni = savedData[bulanIndex];
+            
+            // Update Teks Total Responden
+            document.getElementById('totalRespondenBulan').innerText = dataBulanIni.total;
+            
+            // Update Grafik Pendidikan
+            educationChart.data.datasets[0].data = dataBulanIni.eduCounts;
+            educationChart.update();
+
+            // Update 16 Grafik Pertanyaan
+            questionsData.forEach(q => {
+                surveyCharts[q.id].data.datasets[0].data = dataBulanIni.questions[q.id];
+                surveyCharts[q.id].update();
+            });
+        }
+
+        // TRIGGER EVENT KETIKA USER MENGGANTI FILTER BULAN PADA DROPDOWN
+        filterBulanSelect.addEventListener('change', function() {
+            renderDataBulan(this.value);
+        });
+
+        // 6. LOGIKA SUBMIT FORM (SIMPAN DATA BERDASARKAN BULAN INPUTAN)
         document.getElementById('surveyForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            savedData.total += 1;
 
-            // Tambah nilai pendidikan responden
+            // Ambil index bulan dari input tanggal yang diisi user
+            const tglValue = document.getElementById('tanggalLayanan').value;
+            const tanggalObj = new Date(tglValue);
+            const targetBulan = tanggalObj.getMonth(); // Menghasilkan 0 - 11
+
+            // Tambah total responden pada bulan target
+            savedData[targetBulan].total += 1;
+
+            // Tambah data pendidikan pada bulan target
             const selectedEdu = document.getElementById('pendidikanTerakhir').value;
             const eduIndex = eduLabels.indexOf(selectedEdu);
             if (eduIndex !== -1) {
-                savedData.eduCounts[eduIndex] += 1;
+                savedData[targetBulan].eduCounts[eduIndex] += 1;
             }
 
-            // Tambah nilai pilihan khusus ke setiap pertanyaan masing-masing
+            // Tambah data pilihan jawaban 16 pertanyaan pada bulan target
             questionsData.forEach(q => {
                 const checkedRadio = document.querySelector(`input[name="p${q.id}"]:checked`);
                 if(checkedRadio) {
                     const valIndex = parseInt(checkedRadio.value);
-                    savedData.questions[q.id][valIndex] += 1;
+                    savedData[targetBulan].questions[q.id][valIndex] += 1;
                 }
             });
 
-            // Simpan perubahan ke localstorage
-            localStorage.setItem('survey_total_db', JSON.stringify(savedData));
-            document.getElementById('totalResponden').innerText = savedData.total;
+            // Simpan kembali database ke LocalStorage
+            localStorage.setItem('survey_monthly_db', JSON.stringify(savedData));
             
-            // Perbarui grafik pendidikan
-            educationChart.data.datasets[0].data = savedData.eduCounts;
-            educationChart.update();
+            // Set agar dropdown filter otomatis mengarah ke bulan dari data yang baru saja diinput
+            filterBulanSelect.value = targetBulan;
             
-            // Perbarui 16 grafik pertanyaan secara real-time
-            questionsData.forEach(q => {
-                surveyCharts[q.id].data.datasets[0].data = savedData.questions[q.id];
-                surveyCharts[q.id].update();
-            });
+            // Segarkan render tampilan grafik dasbor
+            renderDataBulan(targetBulan);
 
             this.reset();
+            document.getElementById('tanggalLayanan').valueToDate = new Date(); // Reset tanggal ke hari ini
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            alert("Data berhasil tersimpan! Semua 16 diagram bulat hasil penilaian telah diperbarui secara langsung.");
+            
+            alert(`Data berhasil tersimpan ke dalam rekap bulan ${namaBulan[targetBulan]}!`);
         });
 
-        // 6. LOGIKA DOWNLOAD GRAFIK PENDIDIKAN
+        // 7. LOGIKA DOWNLOAD GRAFIK PENDIDIKAN[cite: 2]
         document.getElementById('downloadEduBtn').addEventListener('click', () => {
             const canvas = document.getElementById('educationChart');
             const link = document.createElement('a');
-            link.download = 'Grafik_Demografi_Pendidikan.png';
+            const namaBlnAktif = filterBulanSelect.options[filterBulanSelect.selectedIndex].text;
+            link.download = `Grafik_Demografi_Pendidikan_${namaBlnAktif}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
         });
 
-        // 7. LOGIKA DOWNLOAD GRAFIK PERTANYAAN INDIVIDU
+        // 8. LOGIKA DOWNLOAD GRAFIK PERTANYAAN INDIVIDU
         window.downloadSingleChart = function(id) {
             const canvas = document.getElementById(`chartQ${id}`);
             const link = document.createElement('a');
-            link.download = `Grafik_Pertanyaan_${id}.png`;
+            const namaBlnAktif = filterBulanSelect.options[filterBulanSelect.selectedIndex].text;
+            link.download = `Grafik_Pertanyaan_${id}_Bulan_${namaBlnAktif}.png`;
             link.href = canvas.toDataURL("image/png");
             link.click();
         };
 
-        // 8. RESET DATA
+        // 9. RESET DATA
         document.getElementById('resetData').addEventListener('click', () => {
-            if(confirm("Apakah Anda ingin menghapus seluruh data ringkasan hasil & pendidikan?")) {
-                localStorage.removeItem('survey_total_db');
+            if(confirm("Apakah Anda ingin menghapus seluruh rekapan bulanan yang tersimpan?")) {
+                localStorage.removeItem('survey_monthly_db');
                 location.reload();
             }
         });
+
+        // Render tampilan pertama kali saat halaman dimuat (sesuai bulan berjalan saat ini)
+        renderDataBulan(filterBulanSelect.value);
     </script>
 </body>
 </html>
