@@ -134,6 +134,9 @@
 
     <!-- LOGIKA DATA REALTIME BERSIH BEBAS ERROR -->
     <script>
+        // URL Web App Google Apps Script (jembatan ke Google Sheet)
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzQKYLpCkV4xlpy-yIkdovN6rMkSuvBN1yZKL_z-mBK3jLGPENWOfDr2QkIncAOfW_J/exec';
+
         const questionsData = [
             { id: 1, text: "Informasi pelayanan tersedia melalui media elektronik maupun nonelektronik" },
             { id: 2, text: "Kesesuaian persyaratan dengan informasi yang diberikan" },
@@ -295,6 +298,20 @@
             renderDataBulan(this.value);
         });
 
+        // KIRIM DATA KE GOOGLE SHEET (VIA GOOGLE APPS SCRIPT WEB APP)
+        function kirimKeGoogleSheet(payload) {
+            if (!SCRIPT_URL || SCRIPT_URL === 'GANTI_DENGAN_URL_WEB_APP_ANDA') {
+                console.warn('SCRIPT_URL belum diatur. Data hanya tersimpan lokal, belum terkirim ke Google Sheet.');
+                return;
+            }
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // wajib untuk hosting statis (GitHub Pages) -> Apps Script
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.error('Gagal mengirim ke Google Sheet:', err));
+        }
+
         // 6. LOGIKA SUBMIT FORM (SIMPAN DATA BERDASARKAN BULAN INPUTAN)
         document.getElementById('surveyForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -314,14 +331,27 @@
                 savedData[targetBulan].eduCounts[eduIndex] += 1;
             }
 
+            // Susun payload lengkap untuk dikirim ke Google Sheet
+            const payloadSheet = {
+                namaLengkap: document.getElementById('namaLengkap').value,
+                tanggalLayanan: tglValue,
+                pendidikanTerakhir: selectedEdu,
+                alamat: document.getElementById('alamat').value,
+                jenisKelamin: document.querySelector('input[name="jenis_kelamin"]:checked') ? document.querySelector('input[name="jenis_kelamin"]:checked').value : ''
+            };
+
             // Tambah data pilihan jawaban 16 pertanyaan pada bulan target
             questionsData.forEach(q => {
                 const checkedRadio = document.querySelector(`input[name="p${q.id}"]:checked`);
                 if(checkedRadio) {
                     const valIndex = parseInt(checkedRadio.value);
                     savedData[targetBulan].questions[q.id][valIndex] += 1;
+                    payloadSheet['p' + q.id] = valIndex;
                 }
             });
+
+            // Kirim ke Google Sheet (database utama)
+            kirimKeGoogleSheet(payloadSheet);
 
             // Simpan kembali database ke LocalStorage
             localStorage.setItem('survey_monthly_db', JSON.stringify(savedData));
