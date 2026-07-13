@@ -126,7 +126,9 @@
             </div>
             
             <div class="text-right border-t border-gray-200 pt-4">
-                <button id="resetData" class="text-xs text-red-500 hover:underline cursor-pointer">Hapus/Reset Seluruh Simulasi Data</button>
+                <button id="downloadAllBtn" class="text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer shadow-md inline-flex items-center gap-2">
+                    💾 Unduh Semua Grafik (.png)
+                </button>
             </div>
         </div>
 
@@ -389,12 +391,74 @@
             link.click();
         };
 
-        // 9. RESET DATA
-        document.getElementById('resetData').addEventListener('click', () => {
-            if(confirm("Apakah Anda ingin menghapus seluruh rekapan bulanan yang tersimpan?")) {
-                localStorage.removeItem('survey_monthly_db');
-                location.reload();
+        // 9. UNDUH SEMUA GRAFIK SEKALIGUS (digabung jadi satu gambar)
+        document.getElementById('downloadAllBtn').addEventListener('click', () => {
+            const namaBlnAktif = filterBulanSelect.options[filterBulanSelect.selectedIndex].text;
+
+            // Kumpulkan semua canvas: grafik pendidikan + 16 grafik pertanyaan
+            const items = [{ title: 'Profil Pendidikan Responden', canvas: document.getElementById('educationChart') }];
+            questionsData.forEach(q => {
+                const c = document.getElementById(`chartQ${q.id}`);
+                if (c) items.push({ title: `P${q.id}. ${q.text}`, canvas: c });
+            });
+
+            // Susun grid 3 kolom
+            const cols = 3;
+            const rows = Math.ceil(items.length / cols);
+            const cellW = 380, cellH = 320, titleH = 50, padding = 16;
+
+            const combined = document.createElement('canvas');
+            combined.width = cols * cellW + padding * (cols + 1);
+            combined.height = rows * (cellH + titleH) + padding * (rows + 1) + 60;
+            const ctx = combined.getContext('2d');
+
+            // Background putih
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, combined.width, combined.height);
+
+            // Judul utama
+            ctx.fillStyle = '#111827';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Rekapitulasi Grafik Survei - ${namaBlnAktif}`, combined.width / 2, 36);
+
+            items.forEach((item, i) => {
+                const col = i % cols;
+                const row = Math.floor(i / cols);
+                const x = padding + col * (cellW + padding);
+                const y = 60 + padding + row * (cellH + titleH + padding);
+
+                // Judul mini chart
+                ctx.fillStyle = '#374151';
+                ctx.font = 'bold 13px Arial';
+                ctx.textAlign = 'left';
+                wrapText(ctx, item.title, x, y + 16, cellW, 16);
+
+                // Gambar chart-nya (di-scale ke ukuran cell)
+                ctx.drawImage(item.canvas, x, y + titleH, cellW, cellH - titleH + 40);
+            });
+
+            function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+                const words = text.split(' ');
+                let line = '', lineY = y, lineCount = 0;
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    if (ctx.measureText(testLine).width > maxWidth && n > 0 && lineCount < 1) {
+                        ctx.fillText(line, x, lineY);
+                        line = words[n] + ' ';
+                        lineY += lineHeight;
+                        lineCount++;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                ctx.fillText(line, x, lineY);
             }
+
+            const link = document.createElement('a');
+            link.download = `Rekap_Semua_Grafik_${namaBlnAktif}.png`;
+            link.href = combined.toDataURL('image/png');
+            link.click();
         });
 
         // Render tampilan pertama kali saat halaman dimuat (sesuai bulan berjalan saat ini)
